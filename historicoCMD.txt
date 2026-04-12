@@ -1,0 +1,16 @@
+doskey
+doskey /history
+doskey /history > "D:\Mulok\historicoCMD.txt"
+dir
+doskey /history > D:\Mulok\historicoCMD.txt
+dir
+doskey /history > D:/Mulok/historicoCMD.txt
+dir
+doskey /history > D:/mulok/historicoCMD.txt
+dir
+cd ..
+dir
+cd M
+cd mulok
+dir
+doskey /history > historicoCMD.txt

@@ -1,0 +1,12 @@
+RewriteEngine On                        
+
+# Redirecionar tudo para public/index.php?page=...
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ public/index.php?page=$1 [QSA,L]
+
+# Bloquear acesso direto ao banco (caso esteja na raiz)
+<Files ~ "\.(sqlite|sqlite3|db)$">
+    Order Allow,Deny
+    Deny from all
+</Files>

@@ -1,0 +1,118 @@
+/* amigos.css - Estilos da página de gerenciamento de amigos */
+
+/* Grid de cards */
+.friends-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--spacing-4);
+    margin-top: var(--spacing-4);
+}
+
+.card {
+    background: var(--white);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-4);
+    text-align: center;
+    transition: all var(--transition-fast);
+    box-shadow: var(--shadow-sm);
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.card img {
+    width: 100px;
+    height: 100px;
+    border-radius: var(--border-radius-full);
+    object-fit: cover;
+    margin: 0 auto var(--spacing-3);
+    border: 3px solid var(--primary-purple-light);
+}
+
+.card h3 {
+    margin-bottom: var(--spacing-2);
+    color: var(--primary-purple);
+}
+
+.card .bio {
+    font-size: 0.875rem;
+    color: var(--gray-500);
+    margin-bottom: var(--spacing-3);
+}
+
+/* Card de solicitação enviada */
+.card-sent {
+    background: var(--warning-light);
+    border-left: 4px solid var(--warning);
+}
+
+/* Status badges */
+.status-badge {
+    display: inline-block;
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--border-radius-full);
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-3);
+}
+
+.status-pendente {
+    background: var(--warning-light);
+    color: #ed6c02;
+}
+
+.status-aguardando {
+    background: var(--info-light);
+    color: #0b5e7e;
+}
+
+/* Grid de solicitações */
+.solicitacoes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--spacing-4);
+    margin-top: var(--spacing-4);
+}
+
+/* Empty message */
+.empty-message {
+    color: var(--gray-500);
+    font-style: italic;
+    margin: var(--spacing-4) 0;
+    text-align: center;
+    padding: var(--spacing-8);
+    background: var(--gray-50);
+    border-radius: var(--border-radius-lg);
+}
+
+/* Section title */
+.secao-titulo {
+    margin-top: var(--spacing-8);
+    color: var(--primary-purple);
+    border-bottom: 2px solid var(--primary-purple-light);
+    padding-bottom: var(--spacing-2);
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+/* Messages */
+.mensagem {
+    padding: var(--spacing-3) var(--spacing-4);
+    margin: var(--spacing-4) 0;
+    border-radius: var(--border-radius-md);
+    font-weight: 500;
+}
+
+.mensagem.sucesso {
+    background: var(--success-light);
+    color: #2e7d32;
+    border-left: 4px solid var(--success);
+}
+
+.mensagem.erro {
+    background: var(--error-light);
+    color: #c62828;
+    border-left: 4px solid var(--error);
+}

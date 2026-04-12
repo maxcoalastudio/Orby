@@ -1,0 +1,67 @@
+/* login.css - Estilos da página de login */
+
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary-purple) 0%, var(--primary-pink) 50%, var(--primary-blue) 100%);
+    padding: var(--spacing-4);
+}
+
+.login-card {
+    background: var(--white);
+    border-radius: var(--border-radius-xl);
+    padding: var(--spacing-8);
+    width: 100%;
+    max-width: 450px;
+    box-shadow: var(--shadow-xl);
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: var(--spacing-8);
+}
+
+.login-header h1 {
+    font-size: 2rem;
+    background: linear-gradient(135deg, var(--primary-purple), var(--primary-pink));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: var(--spacing-2);
+}
+
+.login-header p {
+    color: var(--gray-500);
+}
+
+.login-tabs {
+    display: flex;
+    gap: var(--spacing-2);
+    margin-bottom: var(--spacing-6);
+    border-bottom: 2px solid var(--gray-200);
+}
+
+.login-tab {
+    padding: var(--spacing-2) var(--spacing-4);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    color: var(--gray-500);
+    border: none;
+    background: none;
+}
+
+.login-tab.active {
+    color: var(--primary-purple);
+    border-bottom: 2px solid var(--primary-purple);
+    margin-bottom: -2px;
+}
+
+.login-form {
+    display: none;
+}
+
+.login-form.active {
+    display: block;
+}

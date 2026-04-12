@@ -1,0 +1,227 @@
+primeiro podemos criar um novo banco de dados acessando o phpmyadmin 
+vamos criar um db chamado sistema_login
+vamos criar a tabela usuario e vai ter 3 colunas
+o primeiro vai ser: nome:id, tipo:INT,  A.I(auto increment), indice: Primary key
+o segundo vai ser: nome:email, tipo:varchar, tamanho 50
+o terceiro vai ser: nome:usuario, nome:varchar, tamanho 50
+o quarto senha: nome:senha, tipo:varchar, tamanho 255 que é o maximo, vamos usar senhas Hashes
+depois disso salvar.
+
+
+agora é criar o arquivo de PDO
+no vcscode vamos criar o Conexao.php
+vamos criar a classe com a conexão ao banco de dados e fazer a tratativa com try catch com possivel erro de conexão
+<?php
+Class Usuarios{
+    private $pdo;
+    public function __construct($dbname, $host, $user, $senha){
+        try{
+            $this->pdo = new PDO("mysql:hostname=".$dbname.";host=".$host, $user, $senha);
+            $this->pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
+        }catch(PDOException $e){
+            echo "Oops! Erro ao se conectar ao banco de dados:" . $e->getMessage();
+            exit();
+        }
+    }
+}
+?>
+
+podemos criar outro arquivo para criar_usuario ou incluir como um metodo da classe
+se for criar outro arquivo add a linha require_once('Conexao.php');
+criar a variavel de instancia $conn = new("sistema_login", "localhost", "root", "");
+agora vamos criar o usuario de exemplo com uma senha hash usando uma função para isso
+depois vamos trabalhar em funções para implementar usuarios
+$email = "email";
+$usuario = "admin";
+senha_hash = password_hash("12456", PASSWORD_ARGON2I);
+//vamos criari um arquivo Conexao.php e uma clasee Usuario com os metodos de conexão para fazer consultas, registros, atualização e deleção.
+
+<?php
+class Usuarios{
+    private $pdo;
+    public function __construct($dbname, $host, $user, $senha){
+        try{
+            $this->pdo = new PDO("mysql:dbname=".$dbname.";host=".$host, $user, $senha);
+            $this->pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
+        }catch(PDOException $e){
+            echo "Erro ao se conectar ao banco de dados: " .$e->getMessage();
+            exit();
+        }catch(Exception $e){
+            echo "Erro generico: ". $e->getMessage();
+            exit();
+        }
+    }
+
+    public function criandoUsuario($email, $usuario, $senha){
+        //Verifica email se existe antes de cadastrar
+        $sql = "SELECT id FROM usuarios WHERE email = :email";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(":email", $email);
+        $stmt->execute();
+        if($stmt->rowCount() > 0){
+            $_SESSION['erro'] = "Usuário já cadastrado!";
+            header('Location: login.php');
+            exit();
+        }else{//se não existir esse email no registro
+            $sql = "INSERT INTO usuarios(email, usuario, senha) VALUES(:email, :usuario, :senha )";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindValue(":email", $email);
+            $stmt->bindValue(":usuario", $usuario);
+            $stmt->bindValue(":senha", $senha);
+            if ($stmt->execute()){
+                $_SESSION['sucesso'] = "Usuário criado com sucesso!";
+                header('Location: login.php');
+                exit();
+            } else {
+                $_SESSION['erro'] = "Erro ao criar usuário!";
+                header('Location: login.php');
+                exit();
+            }
+        }
+    }
+
+    public function buscarUsuario($email, $usuario, $senha){
+        $res = array();
+        $sql = "SELECT * FROM usuarios WHERE email = :email AND usuario = :usuario LIMIT 1";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(":email", $email);
+        $stmt->bindValue(":usuario", $usuario);
+        if ($stmt->execute()){
+            if($stmt->rowCount() > 0){
+                $res = $stmt->fetch(PDO::FETCH_ASSOC);
+                //vamos verificar a senha bate com o dados
+                $senha_hash = $res['senha'];
+                if(password_verify($senha, $senha_hash)){
+                    //se a senha for essa mesma vamos criar uma sessao para isso
+                    $_SESSION['usuario_id'] = $res['id'];
+                    //vamos armazenar o id e vamos criar outra para nome
+                    $_SESSION['usuario_nome'] = $res['usuario'];
+                    //feito isso e deu certinho vamos entrar em uma area restrita
+                    header('Location: restrita.php');
+                    exit();
+                }else{
+                    //se ele não logar vamos fazer ele apresentar um erro, vamos criar quele login de erro de sessão que ja colocamos antes
+                    $_SESSION['erro'] = "Senha Incorreta!";
+                    //agora vamos carregar outra pagina
+                    header('Location: login.php');
+                    exit();
+                }//agora se ele não encontrar usuario
+            }else{
+                $_SESSION['erro'] = "Usuario não encontrado!";
+                header('Location: login.php');
+                exit();
+            }
+        } else {
+            echo "Erro ao executar a consulta: " . $stmt->errorInfo()[2];
+        }
+    }
+}
+?>
+
+?>
+//testando a classe e o metodo de cadastrar
+<?php 
+
+    //criando um usuario para teste
+    $e_mail = "maxwell@gmail.com";
+    $usu = "admin";
+    $senha_hash = password_hash("123456", PASSWORD_ARGON2I);
+
+    //criando a conexão e chamando uma finção de cadastrar usuarios registrando os dados
+    $conn = new Usuarios("sistema_login", "localhost", "root", "");
+    $conn->criandoUsuario($e_mail,$usu,$senha_hash);
+
+?>
+
+se pegarmos a senha hash criada para o usuario registrado pelo phpmyadmin
+vamos ter as consições do algoritimo que criou nossa senha que criamos usando o argon2i
+temos o tipo de algoritio, depois o volume, o memory cost, o time, e a seed procedural para criar a senha hash
+$argon2i$v=19$m=65536,t=4,p=1$OXprNVRhTjZzUDJTRktjQw$ob8AmlkKRYbU1sfsnaKwxxnZwz2J9Wc/Ts6+ooyQpuA
+
+tudo isso é calculado por debaixo dos panos para descobrir a senha 
+
+agora criado o usuario teste vamos criar nosso login
+vamos criar uma pagina chamada login.php
+vamos abrir a tag php e dentro dela vamos verificar se tem alguma sessão aberta
+
+
+<?php 
+session_start(); 
+?>
+<!DOCTYPE html>
+<html lang="pt_BR">
+<head>
+    <title>Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+</head>
+<body>
+    <main class="container mt-4">
+        <?php if (isset($_SESSION['sucesso'])) { echo '<div class="alert alert-success">' . $_SESSION['sucesso'] . '</div>'; unset($_SESSION['sucesso']); } ?>
+        <?php if (isset($_SESSION['erro'])) { echo '<div class="alert alert-danger">' . $_SESSION['erro'] . '</div>'; unset($_SESSION['erro']);} // ?>
+        <form action="valida_login.php" method="post">
+            Email: <input class="form-control" type="email" autocomplete="off" name="email"><br/>
+            Usuario: <input class="form-control" type="text" autocomplete="off" name="usuario"><br/>
+            Senha: <input class="form-control" type="password" autocomplete="off" name="senha"><br/>
+            <input class="form-control" type="submit" name="cadastrar" value="cadastrar"><br/>
+            <input class="form-control" type="submit" name="login" value="login">
+        </form>
+    </main>
+</body>
+</html>
+
+
+vamos criar mais um metodo para buscar o usuario que acabou de se cadastrar no Arquivo Conexao.php
+    public function buscarUsuario($email, $usuario, $senha){
+        $res = array();
+        $sql = "SELECT * FROM usuarios WHERE email= :email LIMIT 1";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->(":id", $id);
+        $stmt->bindValue(":email", $email);
+        $stmt->bindValue(":usuario", $usuario);
+        $stmt->bindValue(":senha", $senha);
+        $stmt->execute();
+        if($stmt->rowCount() > 0){
+            $res = $stmt->fetch(PDO::FETCH_ASSOC);
+            //vamos verificar a senha bate com o dados $senha
+            if(password_verify($senha, $res['senha'])){     //se a senha for essa mesma vamos criar uma sessao para isso
+                $_SESSION['usuario_id'] = $res['id'];       //vamos armazenar o id e vamos criar outra para nome
+                $_SESSION['usuario_nome'] = $res['usuario'];        //feito isso e deu certinho vamos entrar em uma area restrita
+                header('Location: restrita.php');           //ainda vamos criar essa area restrita
+                return $res;
+                exit();//agora terminamos para liberar os recursos usados anteriormente
+            }else{      //se ele não logar vamos fazer ele apresentar um erro, vamos criar quele login de erro de sessão que ja colocamos antes
+                $_SESSION['erro_login'] = "Senha Incorreta!";//agora vamos carregar outra pagina 
+                header('Location: Login.php');
+                exit();     //agora liberamos recursos e evitamos que o usuario pule para outra etapa
+            }//agora se ele não encontrar usuario
+        }else{
+            $_SESSION['erro_login'] = "Usuario não encontrado!";
+            header('Location: login.php');
+            exit();
+        }
+
+    }
+    //essa consulta vai pegar o email pelo metodo POST que acabou de ser enviado para o servidor quando o usuario foi criado
+
+//agora vamos criar o valida_login.php
+vamos iniciar a nossa sessao e passar os valores se estiver certinho
+e nele vamos puxar a conexão com banco de dados com require_once
+<?php
+session_start();
+require_once('Conexao.php');
+
+$conn = new Usuarios("sistema_login", "localhost", "root", "");
+
+if (isset($_POST['cadastrar'])){
+    //agora eu puxo a conexao
+    $email = $_POST['email'] ?? '';
+    $usuario = $_POST['usuario'] ?? '';
+    $senha = password_hash($_POST['senha'], PASSWORD_ARGON2I);
+    $conn->criandoUsuario($email, $usuario, $senha);
+} elseif (isset($_POST['login'])) {
+    $email = $_POST['email'];
+    $usuario = $_POST['usuario'];
+    $senha = $_POST['senha'];
+    $conn->buscarUsuario($email, $usuario, $senha);
+}
+?>
