@@ -6,7 +6,7 @@ class Usuarios{
     public function __construct()
     {
       try{
-        $dbPath = '../orby/orby_data/sistema_login.sqlite';
+        $dbPath = '../../orby_data/sistema_login.sqlite';
         //$this->pdo = new PDO("mysql:dbname=".$dbname.";host=".$host, $user, $senha);
 
         if(!file_exists($dbPath)){
