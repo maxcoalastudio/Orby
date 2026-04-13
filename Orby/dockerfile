@@ -5,7 +5,7 @@ ENV PORT=10000
 EXPOSE 10000
 
 # Define o diretório de trabalho
-WORKDIR /var/www/html
+WORKDIR /opt/render/project/src
 
 # Copia todos os arquivos
 COPY . .
