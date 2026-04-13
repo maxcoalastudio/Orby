@@ -1,8 +1,5 @@
 FROM php:8.5-apache
 
-# Instala sqlite3
-RUN docker-php-ext-install sqlite3
-
 # Habilita mod_rewrite para URLs amigáveis
 RUN a2enmod rewrite
 
