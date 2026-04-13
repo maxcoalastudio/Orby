@@ -1,4 +1,3 @@
-
 <?php
 $uri = $_SERVER['REQUEST_URI'];
 
@@ -12,13 +11,14 @@ if (isset($_GET['page'])) {
 }
 
 // Se for a raiz, vai para index
-if ($uri === '/') {
+if ($uri === '/' || $uri === '') {
     include 'index.php';
     return true;
 }
 
 // Se o arquivo existe fisicamente, serve ele
-if (file_exists(__DIR__ . $uri)) {
+$filePath = __DIR__ . $uri;
+if (file_exists($filePath) && is_file($filePath)) {
     return false;
 }
 
