@@ -33,7 +33,7 @@ $id = $_SESSION['usuario_id'];
 ?>
 
 </form>
-<h2>Ecluir usuário <?= $email; ?></h2>
+<h2>Excluir usuário <?= $email; ?></h2>
 <form action="" method="post">
-    <input type="submit" name="deletar" value="Excuir" onclick="return confirm('Tem certeza que deseja deletar o usuário?')">
+    <input type="submit" name="deletar" value="Excluir" onclick="return confirm('Tem certeza que deseja deletar o usuário?')">
 </form>
