@@ -1,17 +1,48 @@
-<?php
+ <?php
 class Usuarios{
     private $pdo;
   
-    //public function __construct($dbname, $host, $user, $senha){
     public function __construct()
     {
       try{
-        $dbPath = 'Orby/orby_data/sistema_login.sqlite';
-        //$this->pdo = new PDO("mysql:dbname=".$dbname.";host=".$host, $user, $senha);
-
-        if(!file_exists($dbPath)){
-          die("Arquivo de banco de dados não encontrado: $dbPath");
+        // 🔧 CAMINHO DINÂMICO - funciona localmente e no servidor
+        $baseDir = dirname(__DIR__, 2); // Sobe 2 pastas: de public/model/ para a raiz
+        
+        // Tenta encontrar o banco em diferentes locais
+        $possiblePaths = [
+            $baseDir . '/orby_data/sistema_login.sqlite',           // Local: Orby/orby_data/
+            __DIR__ . '/../../orby_data/sistema_login.sqlite',      // Alternativa relativa
+            '/opt/render/project/src/orby_data/sistema_login.sqlite' // Render (absoluto)
+        ];
+        
+        $dbPath = null;
+        foreach ($possiblePaths as $path) {
+            if (file_exists($path)) {
+                $dbPath = $path;
+                break;
+            }
         }
+        
+        // Se não encontrou, tenta criar a pasta e o banco
+        if (!$dbPath) {
+            $dataDir = $baseDir . '/orby_data';
+            if (!is_dir($dataDir)) {
+                mkdir($dataDir, 0777, true);
+            }
+            $dbPath = $dataDir . '/sistema_login.sqlite';
+            
+            // Cria um banco vazio se não existir
+            if (!file_exists($dbPath)) {
+                touch($dbPath);
+                chmod($dbPath, 0666);
+            }
+        }
+        
+        // Verificação final
+        if (!file_exists($dbPath)) {
+            die("Arquivo de banco de dados não encontrado: " . $dbPath);
+        } 
+
         $this->pdo = new PDO("sqlite:" . $dbPath);
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
       }catch(PDOException $e){
