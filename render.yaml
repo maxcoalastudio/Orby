@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: orby
+    runtime: php
+    buildCommand: "" #não precisa de build comand
+    startCommand:"php -S 0.0.0.0:10000 router.php"
+    envVars:
+      - key: PHP_VERSION
+        value: 8.5.1
+        plan: free
