@@ -1,24 +1,31 @@
 FROM php:8.5-apache
 
-# Instala extensões necessárias (SQLite, PDO)
-#RUN docker-php-ext-install pdo_sqlite
+# Instala sqlite3
+RUN docker-php-ext-install sqlite3
 
 # Habilita mod_rewrite para URLs amigáveis
 RUN a2enmod rewrite
 
-# Configura o DocumentRoot para apontar para a pasta public
-RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|' /etc/apache2/sites-available/000-default.conf
-
-# Permite o uso do .htaccess (para suas rotas amigáveis)
-RUN sed -i '/<Directory \/var\/www\/html>/,/<\/Directory>/ s/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
-
-# Define a porta que o Render espera
+# Configura o DocumentRoot para a RAIZ (onde está seu index.php)
 ENV PORT=10000
-RUN sed -i "s/80/${PORT}/g" /etc/apache2/ports.conf
-RUN sed -i "s/:80/:${PORT}/g" /etc/apache2/sites-available/000-default.conf
 
-# Copia todo o projeto para dentro do container
+RUN echo "<VirtualHost *:${PORT}>" > /etc/apache2/sites-available/000-default.conf && \
+    echo "    DocumentRoot /var/www/html" >> /etc/apache2/sites-available/000-default.conf && \
+    echo "    <Directory /var/www/html>" >> /etc/apache2/sites-available/000-default.conf && \
+    echo "        Options Indexes FollowSymLinks" >> /etc/apache2/sites-available/000-default.conf && \
+    echo "        AllowOverride All" >> /etc/apache2/sites-available/000-default.conf && \
+    echo "        Require all granted" >> /etc/apache2/sites-available/000-default.conf && \
+    echo "    </Directory>" >> /etc/apache2/sites-available/000-default.conf && \
+    echo "</VirtualHost>" >> /etc/apache2/sites-available/000-default.conf
+
+# Copia todo o projeto
 COPY . /var/www/html/
+
+# Ajusta permissões
+RUN chown -R www-data:www-data /var/www/html
+
+# Configura a porta
+RUN sed -i "s/Listen 80/Listen ${PORT}/" /etc/apache2/ports.conf
 
 EXPOSE 10000
 CMD ["apache2-foreground"]
