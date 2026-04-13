@@ -1,7 +1,7 @@
 FROM php:8.5-apache
 
 # Instala extensões necessárias (SQLite, PDO)
-RUN docker-php-ext-install pdo_sqlite
+#RUN docker-php-ext-install pdo_sqlite
 
 # Habilita mod_rewrite para URLs amigáveis
 RUN a2enmod rewrite
