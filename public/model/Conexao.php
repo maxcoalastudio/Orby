@@ -1,4 +1,4 @@
- <?php
+<?php
 class Usuarios{
     private $pdo;
   
